@@ -1,0 +1,23 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*~
+*.bak
+
+# VCS
+*.orig
+
+# yay build artifacts (if you ever build here)
+yay/
+*.pkg.tar.zst
+*.tar.gz
+
+# Logs
+*.log
+/var/log/ark-admin-recovery-tools.log
+
+# Misc
+*.tmp
