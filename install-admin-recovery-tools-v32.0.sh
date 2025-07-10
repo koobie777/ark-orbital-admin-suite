@@ -101,17 +101,19 @@ main_menu() {
         echo "  2) 🛰️ Hardware detection & report"
         echo "  3) 🛠️ Base tools install only"
         echo "  4) 🌌 AUR/Yay Helper & Safe Installer"
-        echo "  5) 📋 Print Mission Summary"
-        echo "  6) ❌ Abort/Exit"
+        echo "  5) 🪐 ARK Core Installation (Admiral GUI)"
+        echo "  6) 📋 Print Mission Summary"
+        echo "  7) ❌ Abort/Exit"
         echo "------------------------------------------------------"
-        read -rp "$(echo -e "${COLOR_YELLOW}Enter selection [1-6]: ${COLOR_RESET}")" opt
+        read -rp "$(echo -e "${COLOR_YELLOW}Enter selection [1-7]: ${COLOR_RESET}")" opt
         case $opt in
             1) run_full_install ;;
             2) run_hardware_detection ;;
             3) install_base_tools ;;
             4) yay_aur_menu ;;
-            5) print_summary; read -n 1 -s -r -p "Press any key to continue...";;
-            6) caution "Mission aborted by user. Disengaging..."; sleep 1; exit 0 ;;
+            5) ark_core_installation ;;
+            6) print_summary; read -n 1 -s -r -p "Press any key to continue...";;
+            7) caution "Mission aborted by user. Disengaging..."; sleep 1; exit 0 ;;
             *) caution "Invalid selection. Please choose a valid option."; sleep 1 ;;
         esac
     done
@@ -542,6 +544,462 @@ detect_sensors() {
 }
 
 post_yay_aur_utilities() { mission "Offering AUR utilities..."; }
+
+# ---[ ARK CORE INSTALLATION FUNCTIONS ]---
+
+ark_core_installation() {
+    if ! is_root; then
+        critical "ARK Core installation requires root privileges. Please run with sudo."
+        read -n 1 -s -r -p "Press any key to return to menu..."
+        return
+    fi
+
+    header
+    echo -e "${COLOR_PURPLE}🪐 ARK CORE INSTALLATION - ADMIRAL GUI SETUP 🪐${COLOR_RESET}\n"
+    echo -e "${COLOR_CYAN}This will install ARK Core with a complete Admiral GUI environment:${COLOR_RESET}"
+    echo -e "  • Create 'commander' user with KDE Plasma desktop"
+    echo -e "  • Space-themed environment with transparency and blur effects"
+    echo -e "  • SSH server for remote access"
+    echo -e "  • Full ARK Orbital Admin Suite integration"
+    echo -e "  • Support for both headless and GUI modes"
+    echo
+    echo -e "${COLOR_YELLOW}Installation Mode Options:${COLOR_RESET}"
+    echo "  1) 🖥️  Full GUI Mode (KDE Plasma + Desktop Environment)"
+    echo "  2) 💻 Headless Mode (SSH access only, no GUI)"
+    echo "  3) 🔙 Back to main menu"
+    echo
+    read -rp "$(echo -e "${COLOR_YELLOW}Select installation mode [1-3]: ${COLOR_RESET}")" mode_choice
+    
+    case $mode_choice in
+        1) install_ark_core_gui ;;
+        2) install_ark_core_headless ;;
+        3) return ;;
+        *) caution "Invalid selection. Returning to main menu."; return ;;
+    esac
+}
+
+install_ark_core_gui() {
+    mission "Initiating ARK Core GUI installation..."
+    echo -e "${COLOR_YELLOW}This process will:${COLOR_RESET}"
+    echo "1. Create 'commander' user account"
+    echo "2. Install KDE Plasma desktop environment"
+    echo "3. Configure space-themed desktop with effects"
+    echo "4. Setup SSH server"
+    echo "5. Install ARK Orbital Admin Suite tools"
+    echo
+    prompt "Continue with GUI installation? [Y/n] "
+    read yn
+    yn=${yn:-Y}
+    if [[ ! "$yn" =~ ^[Yy]$ ]]; then
+        caution "Installation cancelled."
+        read -n 1 -s -r -p "Press any key to return..."
+        return
+    fi
+
+    create_commander_user
+    install_kde_plasma
+    configure_space_theme
+    configure_ssh_access
+    integrate_ark_tools
+    configure_auto_login
+    
+    success "ARK Core GUI installation completed!"
+    echo -e "${COLOR_GREEN}🎉 Welcome to ARK Core Admiral GUI!${COLOR_RESET}"
+    echo
+    echo -e "${COLOR_CYAN}Next steps:${COLOR_RESET}"
+    echo "• Reboot to start KDE Plasma: sudo reboot"
+    echo "• Login as 'commander' user"
+    echo "• SSH access available on port 22"
+    echo "• ARK Orbital Admin Suite accessible from desktop"
+    echo
+    SUMMARY["ARK Core GUI"]="Installed with commander user and KDE Plasma"
+    read -n 1 -s -r -p "Press any key to continue..."
+}
+
+install_ark_core_headless() {
+    mission "Initiating ARK Core headless installation..."
+    echo -e "${COLOR_YELLOW}This process will:${COLOR_RESET}"
+    echo "1. Create 'commander' user account"
+    echo "2. Setup SSH server for remote access"
+    echo "3. Install ARK Orbital Admin Suite tools"
+    echo "4. Configure headless operation"
+    echo
+    prompt "Continue with headless installation? [Y/n] "
+    read yn
+    yn=${yn:-Y}
+    if [[ ! "$yn" =~ ^[Yy]$ ]]; then
+        caution "Installation cancelled."
+        read -n 1 -s -r -p "Press any key to return..."
+        return
+    fi
+
+    create_commander_user
+    configure_ssh_access
+    integrate_ark_tools
+    configure_headless_setup
+    
+    success "ARK Core headless installation completed!"
+    echo -e "${COLOR_GREEN}🚀 ARK Core is ready for remote administration!${COLOR_RESET}"
+    echo
+    echo -e "${COLOR_CYAN}Access information:${COLOR_RESET}"
+    echo "• SSH: ssh commander@$(hostname -I | awk '{print $1}')"
+    echo "• ARK Orbital Admin Suite: ~/ark-orbital-admin-suite/"
+    echo "• Default password: please change after first login"
+    echo
+    SUMMARY["ARK Core Headless"]="Installed with commander user and SSH access"
+    read -n 1 -s -r -p "Press any key to continue..."
+}
+
+create_commander_user() {
+    mission "Creating commander user account..."
+    
+    if id "commander" &>/dev/null; then
+        caution "User 'commander' already exists. Skipping user creation."
+        return
+    fi
+    
+    # Create commander user with home directory
+    safe_pacman "useradd -m -G wheel,audio,video,optical,storage -s /bin/bash commander"
+    
+    # Set password for commander
+    echo -e "${COLOR_YELLOW}Setting password for commander user...${COLOR_RESET}"
+    echo "commander:arkcommander" | chpasswd
+    
+    # Add commander to sudoers
+    echo "commander ALL=(ALL) ALL" >> /etc/sudoers.d/commander
+    
+    # Create initial directories
+    sudo -u commander mkdir -p /home/commander/{Desktop,Documents,Downloads,Pictures,Videos,Music}
+    sudo -u commander mkdir -p /home/commander/.config
+    
+    success "Commander user created successfully"
+    SUMMARY["Commander User"]="Created with administrative privileges"
+}
+
+install_kde_plasma() {
+    mission "Installing KDE Plasma desktop environment..."
+    
+    # Install KDE Plasma and essential applications
+    safe_pacman "pacman -S --needed --noconfirm \
+        plasma-meta plasma-wayland-session kde-applications-meta \
+        sddm sddm-kcm dolphin konsole kate kwrite kcalc \
+        spectacle gwenview okular ark kfind ksystemlog \
+        plasma-browser-integration plasma-desktop plasma-workspace \
+        kscreen kgamma5 powerdevil plasma-pa plasma-nm \
+        bluedevil discover packagekit-qt5 flatpak \
+        ttf-liberation ttf-dejavu noto-fonts noto-fonts-emoji"
+    
+    # Enable display manager
+    systemctl enable sddm
+    
+    # Install additional space-themed packages
+    safe_pacman "pacman -S --needed --noconfirm \
+        plasma-browser-integration latte-dock kvantum-qt5 \
+        papirus-icon-theme breeze-gtk kde-gtk-config"
+    
+    success "KDE Plasma installation completed"
+    SUMMARY["KDE Plasma"]="Installed with SDDM display manager"
+}
+
+configure_space_theme() {
+    mission "Configuring space-themed desktop environment..."
+    
+    # Create theme configuration directory
+    sudo -u commander mkdir -p /home/commander/.config/plasma-org.kde.plasma.desktop-appletsrc
+    sudo -u commander mkdir -p /home/commander/.config/kwinrc
+    sudo -u commander mkdir -p /home/commander/.config/plasmarc
+    
+    # Configure Plasma theme settings
+    cat > /home/commander/.config/plasmarc << 'EOF'
+[Theme]
+name=breeze-dark
+
+[Wallpapers]
+usersWallpapers=/usr/share/wallpapers/
+EOF
+    
+    # Configure KWin effects for transparency and blur
+    cat > /home/commander/.config/kwinrc << 'EOF'
+[Compositing]
+Enabled=true
+GLCore=true
+HiddenPreviews=5
+OpenGLIsUnsafe=false
+WindowsBlockCompositing=true
+
+[Effect-Blur]
+BlurStrength=5
+NoiseStrength=0
+
+[Effect-DesktopGrid]
+Zoomout=750
+
+[Effect-PresentWindows]
+DrawWindowCaptions=true
+DrawWindowIcons=true
+
+[Plugins]
+blurEnabled=true
+contrastEnabled=true
+kwin4_effect_fadeEnabled=true
+kwin4_effect_translucyEnabled=true
+slideEnabled=true
+zoomEnabled=true
+EOF
+    
+    # Set space wallpaper if available
+    if [[ -f /usr/share/wallpapers/Next/contents/images/1920x1080.jpg ]]; then
+        cat > /home/commander/.config/plasma-org.kde.plasma.desktop-appletsrc << 'EOF'
+[Containments][1][Wallpaper][org.kde.image][General]
+Image=file:///usr/share/wallpapers/Next/contents/images/1920x1080.jpg
+EOF
+    fi
+    
+    # Set dark theme and space colors
+    cat > /home/commander/.config/kdeglobals << 'EOF'
+[ColorEffects:Disabled]
+Color=56,56,56
+ColorAmount=0
+ColorEffect=0
+
+[ColorEffects:Inactive]
+ChangeSelectionColor=true
+Color=112,111,110
+ColorAmount=0.025000000000000001
+ColorEffect=2
+
+[Colors:Button]
+BackgroundAlternate=64,69,82
+BackgroundNormal=49,54,59
+DecorationFocus=61,174,233
+DecorationHover=61,174,233
+ForegroundActive=61,174,233
+ForegroundInactive=161,169,177
+ForegroundLink=29,153,243
+ForegroundNegative=218,68,83
+ForegroundNeutral=246,116,0
+ForegroundNormal=252,252,252
+ForegroundPositive=39,174,96
+ForegroundVisited=155,89,182
+
+[Colors:Selection]
+BackgroundAlternate=30,146,255
+BackgroundNormal=61,174,233
+DecorationFocus=61,174,233
+DecorationHover=61,174,233
+ForegroundActive=252,252,252
+ForegroundInactive=161,169,177
+ForegroundLink=253,188,75
+ForegroundNegative=218,68,83
+ForegroundNeutral=246,116,0
+ForegroundNormal=252,252,252
+ForegroundPositive=39,174,96
+ForegroundVisited=155,89,182
+
+[Colors:Window]
+BackgroundAlternate=49,54,59
+BackgroundNormal=35,38,41
+DecorationFocus=61,174,233
+DecorationHover=61,174,233
+ForegroundActive=61,174,233
+ForegroundInactive=161,169,177
+ForegroundLink=29,153,243
+ForegroundNegative=218,68,83
+ForegroundNeutral=246,116,0
+ForegroundNormal=252,252,252
+ForegroundPositive=39,174,96
+ForegroundVisited=155,89,182
+
+[General]
+ColorScheme=BreezeDark
+Name=Breeze Dark
+shadeSortColumn=true
+
+[KDE]
+contrast=4
+
+[WM]
+activeBackground=47,52,63
+activeBlend=47,52,63
+activeForeground=252,252,252
+inactiveBackground=47,52,63
+inactiveBlend=47,52,63
+inactiveForeground=161,169,177
+EOF
+    
+    # Set ownership
+    chown -R commander:commander /home/commander/.config
+    
+    success "Space-themed desktop configuration completed"
+    SUMMARY["Space Theme"]="Configured with dark theme, blur effects, and transparency"
+}
+
+configure_ssh_access() {
+    mission "Configuring SSH server access..."
+    
+    # Install OpenSSH if not present
+    safe_pacman "pacman -S --needed --noconfirm openssh"
+    
+    # Configure SSH daemon
+    cp /etc/ssh/sshd_config /etc/ssh/sshd_config.backup
+    
+    # Basic SSH configuration
+    cat > /etc/ssh/sshd_config << 'EOF'
+# ARK Core SSH Configuration
+Port 22
+Protocol 2
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+
+# Authentication
+LoginGraceTime 2m
+PermitRootLogin no
+StrictModes yes
+MaxAuthTries 6
+MaxSessions 10
+PubkeyAuthentication yes
+PasswordAuthentication yes
+PermitEmptyPasswords no
+ChallengeResponseAuthentication no
+KerberosAuthentication no
+GSSAPIAuthentication no
+UsePAM yes
+
+# Allow commander user
+AllowUsers commander
+
+# Logging
+SyslogFacility AUTH
+LogLevel INFO
+
+# Network
+X11Forwarding yes
+X11DisplayOffset 10
+PrintMotd no
+PrintLastLog yes
+TCPKeepAlive yes
+ClientAliveInterval 60
+ClientAliveCountMax 3
+
+# SFTP
+Subsystem sftp /usr/lib/ssh/sftp-server
+
+# Banner
+Banner /etc/ssh/banner
+EOF
+    
+    # Create SSH banner
+    cat > /etc/ssh/banner << 'EOF'
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+     🪐 ARK CORE ORBITAL COMMAND 🪐
+      Welcome to the Admiral GUI
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+Authorized access only.
+All activities are monitored and logged.
+
+Mission Control: ARK Orbital Admin Suite
+EOF
+    
+    # Enable and start SSH service
+    systemctl enable sshd
+    systemctl restart sshd
+    
+    # Configure firewall for SSH
+    if command -v ufw &> /dev/null; then
+        ufw allow ssh
+    elif command -v firewall-cmd &> /dev/null; then
+        firewall-cmd --permanent --add-service=ssh
+        firewall-cmd --reload
+    fi
+    
+    success "SSH server configured and enabled"
+    SUMMARY["SSH Access"]="Enabled on port 22 for commander user"
+}
+
+integrate_ark_tools() {
+    mission "Integrating ARK Orbital Admin Suite tools..."
+    
+    # Copy ARK Orbital Admin Suite to commander's home
+    cp -r "$(pwd)" /home/commander/ark-orbital-admin-suite
+    chown -R commander:commander /home/commander/ark-orbital-admin-suite
+    
+    # Create desktop shortcut
+    cat > /home/commander/Desktop/ARK-Orbital-Admin-Suite.desktop << 'EOF'
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=ARK Orbital Admin Suite
+Comment=Mission Control for Admin & Recovery Operations
+Exec=konsole -e /home/commander/ark-orbital-admin-suite/install-admin-recovery-tools-v32.0.sh
+Icon=applications-system
+Terminal=false
+Categories=System;Administration;
+StartupNotify=true
+EOF
+    
+    # Make desktop shortcut executable
+    chmod +x /home/commander/Desktop/ARK-Orbital-Admin-Suite.desktop
+    chown commander:commander /home/commander/Desktop/ARK-Orbital-Admin-Suite.desktop
+    
+    # Add to applications menu
+    mkdir -p /home/commander/.local/share/applications
+    cp /home/commander/Desktop/ARK-Orbital-Admin-Suite.desktop /home/commander/.local/share/applications/
+    chown -R commander:commander /home/commander/.local
+    
+    # Create convenience aliases
+    cat >> /home/commander/.bashrc << 'EOF'
+
+# ARK Orbital Admin Suite aliases
+alias ark-admin='cd ~/ark-orbital-admin-suite && sudo ./install-admin-recovery-tools-v32.0.sh'
+alias ark-tools='cd ~/ark-orbital-admin-suite'
+alias mission-control='cd ~/ark-orbital-admin-suite && sudo ./install-admin-recovery-tools-v32.0.sh'
+
+# Welcome message
+echo "🪐 Welcome to ARK Core, Commander!"
+echo "Type 'ark-admin' to launch ARK Orbital Admin Suite"
+echo "Type 'mission-control' for quick access to admin tools"
+EOF
+    
+    success "ARK Orbital Admin Suite integration completed"
+    SUMMARY["ARK Integration"]="Tools integrated with desktop shortcuts and aliases"
+}
+
+configure_auto_login() {
+    mission "Configuring automatic login for commander..."
+    
+    # Configure SDDM for auto-login
+    mkdir -p /etc/sddm.conf.d
+    cat > /etc/sddm.conf.d/autologin.conf << 'EOF'
+[Autologin]
+User=commander
+Session=plasma
+EOF
+    
+    success "Auto-login configured for commander user"
+}
+
+configure_headless_setup() {
+    mission "Configuring headless operation..."
+    
+    # Disable display manager for headless mode
+    systemctl disable sddm 2>/dev/null || true
+    
+    # Configure automatic console login
+    mkdir -p /etc/systemd/system/getty@tty1.service.d
+    cat > /etc/systemd/system/getty@tty1.service.d/override.conf << 'EOF'
+[Service]
+ExecStart=
+ExecStart=-/usr/bin/agetty --autologin commander --noclear %I $TERM
+EOF
+    
+    # Set multi-user target for headless
+    systemctl set-default multi-user.target
+    
+    success "Headless operation configured"
+    SUMMARY["Headless Mode"]="Configured for automatic console login"
+}
 
 # ---[ AUR Helper Entrypoint (after all function definitions!) ]---
 if [[ "$1" == "--aur-helper-session" ]] && [[ $EUID -ne 0 ]]; then
