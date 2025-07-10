@@ -1,5 +1,11 @@
 # 🪐 ARK ORBITAL ADMIN SUITE
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Last Commit](https://img.shields.io/github/last-commit/koobie777/ark-orbital-admin-suite)](https://github.com/koobie777/ark-orbital-admin-suite/commits/main)
+[![Open Issues](https://img.shields.io/github/issues/koobie777/ark-orbital-admin-suite)](https://github.com/koobie777/ark-orbital-admin-suite/issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/koobie777/ark-orbital-admin-suite)](https://github.com/koobie777/ark-orbital-admin-suite/pulls)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+
 **Mission Control for Admin & Recovery Operations**  
 Author: [koobie777](https://github.com/koobie777)
 
