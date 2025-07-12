@@ -1,4 +1,4 @@
-# 🪐 ARK ORBITAL ADMIN SUITE
+# 🪐 ARK ORBITAL ADMIN SUITE v33.0
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Last Commit](https://img.shields.io/github/last-commit/koobie777/ark-orbital-admin-suite)](https://github.com/koobie777/ark-orbital-admin-suite/commits/main)
@@ -6,20 +6,21 @@
 [![Pull Requests](https://img.shields.io/github/issues-pr/koobie777/ark-orbital-admin-suite)](https://github.com/koobie777/ark-orbital-admin-suite/pulls)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
-**Mission Control for Admin & Recovery Operations**  
+**Complete Ecosystem Management Platform for Admin & Recovery Operations**  
 Author: [koobie777](https://github.com/koobie777)
 
 ---
 
 ## 🚀 About
 
-ARK Orbital Admin Suite is your all-in-one, interactive mission control for Linux system administration and recovery.  
+ARK Orbital Admin Suite is your complete ecosystem management platform for Linux system administration, recovery, and deployment operations. Version 33.0 transforms the suite from a toolkit into a comprehensive platform with portable mode, Arch Linux installer, expert CLI interface, update system, and customization framework. Built for sysadmins, tinkerers, rescue missions, and ecosystem deployment of all kinds.  
 With robust hardware detection, guided toolkit installation, safe AUR package management, and cosmic style, it’s built for sysadmins, tinkerers, and rescue missions of all kinds.
 
 ---
 
 ## 🌠 Features
 
+### Core Features
 - **Interactive, Menu-Driven UI**  
   Easy full-screen terminal menus with clear options and emoji indicators.
 - **Full Toolkit Install**  
@@ -28,10 +29,24 @@ With robust hardware detection, guided toolkit installation, safe AUR package ma
   Detects and reports on CPUs, GPUs, RAM, storage, network, peripherals & more.
 - **Safe AUR/Yay Helper**  
   Switches to user context for AUR package install—never runs yay as root!
+
+### 🆕 New in v33.0 - Complete Ecosystem Management
+- **🏴‍☠️ ARK Admiral Portable Mode**  
+  Portable/live system deployment with zram optimization and persistence management.
+- **📦 Complete Arch Linux Installer**  
+  Guided Arch installation with ARK ecosystem integration and safety checks.
+- **🤖 Expert Mode CLI**  
+  Command-line interface for power users with batch operations and debug mode.
+- **🔄 ARK Updater System**  
+  Auto-update mechanism with version management and rollback capability.
+- **🎨 Generic Customization Framework**  
+  Template system for creating personalized admin suites with modular components.
+
+### Platform Features
 - **Mission Debrief & Summary**  
   Prints a summary and inspirational space quotes at the end of your mission.
-- **Cross-Platform Ambitions**  
-  Currently best on Arch Linux. Plans for Windows, macOS, and other distros coming soon!
+- **Cross-Platform Foundation**  
+  Currently optimized for Arch Linux with plans for broader distribution support.
 
 ---
 
@@ -44,25 +59,54 @@ Support for Windows, macOS, and additional Linux distros is planned for future r
 
 ## 📝 Usage
 
+### Interactive Mode (Recommended)
 ```bash
 # Make executable
-chmod +x install-admin-recovery-tools-v32.0.sh
+chmod +x install-admin-recovery-tools-v33.0.sh
 
 # Run as root (for full toolkit and hardware detection)
-sudo ./install-admin-recovery-tools-v32.0.sh
+sudo ./install-admin-recovery-tools-v33.0.sh
 
 # Or as a regular user (for AUR/yay helper menu)
-./install-admin-recovery-tools-v32.0.sh
+./install-admin-recovery-tools-v33.0.sh
 ```
 
-### Main Menu
+### Expert CLI Mode
+```bash
+# Quick hardware scan
+./install-admin-recovery-tools-v33.0.sh --hardware
 
+# Automated full install
+sudo ./install-admin-recovery-tools-v33.0.sh --full
+
+# Portable mode setup
+sudo ./install-admin-recovery-tools-v33.0.sh --portable
+
+# Enable debug logging
+./install-admin-recovery-tools-v33.0.sh --debug --install
+
+# Show help
+./install-admin-recovery-tools-v33.0.sh --help
+```
+
+### Enhanced Main Menu (v33.0)
+
+#### Core Operations
 - `1) 🚀 Full toolkit install` — Installs all base tools, runs hardware detection, and launches safe AUR helper.
 - `2) 🛰️ Hardware detection & report` — Robust hardware and device scan.
 - `3) 🛠️ Base tools install only` — Installs only core admin/recovery tools.
 - `4) 🌌 AUR/Yay Helper & Safe Installer` — User-mode AUR management.
-- `5) 📋 Print Mission Summary` — See what was detected and installed.
-- `6) ❌ Abort/Exit` — End the session.
+
+#### 🆕 New Ecosystem Features
+- `5) 🏴‍☠️ ARK Admiral Portable Mode` — Configure portable/live system with zram optimization.
+- `6) 📦 Complete Arch Linux Installer` — Guided Arch installation with safety checks.
+- `7) 🤖 Expert Mode CLI` — Interactive CLI session with advanced commands.
+- `8) 🔄 ARK Updater System` — Auto-update with version management and rollback.
+- `9) 🎨 Customize ARK Ecosystem` — Personalize and create custom admin suites.
+
+#### System
+- `10) 📋 Print Mission Summary` — See what was detected and installed.
+- `11) ❌ Abort/Exit` — End the session.
 
 ---
 
@@ -75,9 +119,23 @@ sudo ./install-admin-recovery-tools-v32.0.sh
 
 ## 💡 Notes & Requirements
 
-- **Target OS:** Arch Linux and derivatives (for now)
+### System Requirements
+- **Target OS:** Arch Linux and derivatives (optimized for v33.0)
 - **Requires:** bash, sudo, standard GNU tools, yay (for AUR features)
 - **Optional:** Many features will gracefully degrade if some commands are missing.
+
+### New Feature Requirements (v33.0)
+- **Portable Mode:** Requires root for zram configuration
+- **Arch Installer:** Requires root and internet connectivity
+- **Expert CLI:** Works with any user level
+- **Updater System:** Requires internet connectivity
+- **Customization:** Works with any user level
+
+### Recommended Environment
+- Fresh Arch Linux installation or live environment
+- Minimum 2GB RAM (4GB+ recommended for portable mode)
+- Internet connection for full functionality
+- Root access for system-level operations
 
 ---
 
