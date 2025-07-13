@@ -1,1 +1,0 @@
-orbital-command-v34.2.sh
